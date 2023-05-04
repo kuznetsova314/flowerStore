@@ -50,6 +50,10 @@ class UserController {
 
     check(req, res, next) {
         const token = generateJwt(req.user.id, req.user.phone, req.user.role)
+        const user = User.find(u => u.phone === req.user.phone)
+        if (!user) {
+            return next(ApiError.internal('Пользователь не найден'))
+        }
         return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion})
     }
 }
