@@ -31,7 +31,7 @@ class UserController {
         const user = {id: id, phone: phone, role: "user", password: password, fullName: fullName, city: city, address: address}
         User.push({user})
         const token = generateJwt(user.id, user.phone, user.role)
-        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion})
+        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion, id: user.id})
     }
 
     login(req, res, next) {
@@ -45,7 +45,7 @@ class UserController {
             return next(ApiError.internal('Указан неверный пароль'))
         }
         const token = generateJwt(user.id, user.phone, user.role)
-        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion})
+        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion, id: user.id})
     }
 
     check(req, res, next) {
@@ -54,7 +54,7 @@ class UserController {
         if (!user) {
             return next(ApiError.internal('Пользователь не найден'))
         }
-        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion})
+        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion, id: user.id})
     }
 }
 
