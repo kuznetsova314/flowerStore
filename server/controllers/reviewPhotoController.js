@@ -163,8 +163,7 @@ class ReviewsPhotoController {
 
     getAll(req, res) {
         let {limit, page} = req.query
-        page = page || 1
-        limit = limit || 9
+
         let start = page * limit - limit
         let end = start + limit
         let reviews = ReviewsPhoto.slice(start, end);
