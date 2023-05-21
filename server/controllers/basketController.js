@@ -53,7 +53,8 @@ class BasketController {
     create(req, res, next) {
         try {
             let { userId, price, product, count} = req.body
-            Basket.push({userId: userId, product: product, price: price, count: count});
+            const id = +Basket.length + 1;
+            Basket.push({userId: userId, product: product, price: price, count: count, id: id});
             return res.json("Добавлено успешно")
         } catch (e) {
             next(ApiError.badRequest(e.message))
@@ -68,9 +69,17 @@ class BasketController {
 
     }
     changeItem(req, res) {
-        const {product} = req.body
+        const product = req.body
         Basket.forEach(item => (item.id === product.id) && (item = product) );
         return res.json(product);
+    }
+    deleteItem(req, res) {
+        const {basketId, userId} = req.query
+        const elem = Basket.find(item => item.id === basketId)
+        const index = Basket.indexOf(elem)
+        Basket.splice(index, 1);
+        const products = Basket.filter(item => item.userId == userId);
+        return res.json(products);
     }
 }
 
