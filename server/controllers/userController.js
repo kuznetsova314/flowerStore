@@ -31,21 +31,35 @@ class UserController {
         const user = {id: id, phone: phone, role: "user", password: password, fullName: fullName, city: city, address: address}
         User.push({user})
         const token = generateJwt(user.id, user.phone, user.role)
-        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion, id: user.id})
+        return res.json({
+            token, 
+            fullName: user.fullName, 
+            city: user.city, 
+            address: user.address, 
+            promotion: user.promotion, 
+            id: user.id
+        })
     }
 
     login(req, res, next) {
-        const {phone, password} = req.body
-        const user = User.find(u => u.phone === phone)
+        const {phone, password} = req.body;
+        const user = User.find(u => u.phone === phone);
         if (!user) {
-            return next(ApiError.internal('Пользователь не найден'))
+            return next(ApiError.internal('Пользователь не найден'));
         }
         let comparePassword = user.password === password ? true : false;
         if (!comparePassword) {
-            return next(ApiError.internal('Указан неверный пароль'))
+            return next(ApiError.internal('Указан неверный пароль'));
         }
-        const token = generateJwt(user.id, user.phone, user.role)
-        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion, id: user.id})
+        const token = generateJwt(user.id, user.phone, user.role);
+        return res.json({
+            token, 
+            fullName: user.fullName, 
+            city: user.city, 
+            address: user.address, 
+            promotion: user.promotion, 
+            id: user.id
+        })
     }
 
     check(req, res, next) {
@@ -54,7 +68,51 @@ class UserController {
         if (!user) {
             return next(ApiError.internal('Пользователь не найден'))
         }
-        return res.json({token, fullName: user.fullName, city: user.city, address: user.address, promotion: user.promotion, id: user.id})
+        return res.json({
+            token, 
+            fullName: user.fullName, 
+            city: user.city, 
+            address: user.address, 
+            promotion: user.promotion, 
+            id: user.id
+        })
+    }
+
+    changePassword(req, res, next) {
+        const {phone, oldPassword, newPassword} = req.body;
+        const candidate = User.find(item => item.phone == phone)
+        if (candidate.password !== oldPassword) {
+            return next(ApiError.internal('Старый пароль неверен'));
+        }
+        User.forEach(item => {
+            if(item.phone == phone) {
+                item.password = newPassword
+            }
+        })
+        const person = User.find(item => item.phone == phone);
+        return res.json(candidate.password)
+    }
+
+    changeInfo(req, res, next) {
+        const newUser = req.body;
+        User.forEach(item => {
+            if(item.phone === newUser.phone) {
+                item.phone = newUser.phone,
+                item.address = newUser.address,
+                item.city = newUser.city,
+                item.fullName = newUser.fullName
+            }
+        })
+        const candidate = User.find(item => item.phone === newUser.phone)
+        const token = generateJwt(candidate.id, candidate.phone, candidate.role);
+        return res.json({
+            token, 
+            fullName: candidate.fullName, 
+            city: candidate.city, 
+            address: candidate.address, 
+            promotion: candidate.promotion, 
+            id: candidate.id
+        })
     }
 }
 

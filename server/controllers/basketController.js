@@ -54,7 +54,11 @@ class BasketController {
         try {
             let { userId, price, product, count} = req.body
             const id = +Basket.length + 1;
-            Basket.push({userId: userId, product: product, price: price, count: count, id: id});
+            const productForBasket = JSON.parse(product);
+            const priceForBasket = JSON.parse(price);
+            const countForBasket = JSON.parse(count);
+            const userIdForBasket = JSON.parse(userId);
+            Basket.push({userId: userIdForBasket, product: productForBasket, price: priceForBasket, count: countForBasket, id: id});
             return res.json("Добавлено успешно")
         } catch (e) {
             next(ApiError.badRequest(e.message))
@@ -70,8 +74,11 @@ class BasketController {
     }
     changeItem(req, res) {
         const product = req.body
-        Basket.forEach(item => (item.id === product.id) && (item = product) );
-        return res.json(product);
+        Basket.forEach(item => {
+            if(item.id === product.id) {item.count = product.count}
+        });
+        let elem = Basket.find(item => item.id === product.id)
+        return res.json(elem);
     }
     deleteItem(req, res) {
         const {basketId, userId} = req.query
